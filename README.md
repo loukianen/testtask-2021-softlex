@@ -1,13 +1,8 @@
 # ToDo app (Testtask)
 
-[![Actions Status](https://github.com/loukianen/frontent-testing-react-project-lvl1/workflows/hexlet-check/badge.svg)](https://github.com/loukianen/frontent-testing-react-project-lvl1/actions)
-[![Maintainability](https://api.codeclimate.com/v1/badges/c9ddd9ca31e8b4931b9f/maintainability)](https://codeclimate.com/github/loukianen/frontent-testing-react-project-lvl1/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/c9ddd9ca31e8b4931b9f/test_coverage)](https://codeclimate.com/github/loukianen/frontent-testing-react-project-lvl1/test_coverage)
-[![codecov](https://codecov.io/gh/loukianen/frontent-testing-react-project-lvl1/branch/master/graph/badge.svg?token=65C6R12F5Y)](https://codecov.io/gh/loukianen/frontent-testing-react-project-lvl1)
+App shows paginated and sorted list of task, which store at a remote server. Everyone can see the list and add new task. Only admin can edit tasks and mark as done. App provide information whether task edited and done.
 
-A CLI-tool that downloads pages from the Internet and saves them to your computer. Together with the page, it downloads all the resources (images, styles and js) making it possible to open the page without the Internet. Main target is testing.
-
-[Read more about this education project](https://ru.hexlet.io/programs/frontend-testing-react/projects/67).
+[Customer is SOFTLEX](http://softlex.pro/).
 
 ## Installation
 
@@ -16,24 +11,17 @@ Install:
 make install
 ```
 
-## Run tests
+## Run linter
 
 ```sh
-$ make test
+$ make lint
 ```
 
 ## Usage
-
-### Help
-
-For get help run:
-```sh
-page-loader --help
-```
 
 ### Simple run
 
 To compare two files run:
 ```sh
-page-loader [options] <url>
+make start
 ```

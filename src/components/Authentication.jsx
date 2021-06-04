@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import $ from 'jquery';
 
-const Authentication = ({ changeState }) => {
+const Authentication = ({ setCommonState }) => {
   // MWxDRnNDNFhFRndsWDQyeGxHamIwdXpUS2Z4MVg2UDFjQ2cxQldQVjAxZDh5MXVMdTJsWVBNeU85c2J3YUgyYkw0SFRFQURnVmV3VkxFeG9yVW9kSnc9PQ==
 
   const [requestState, setRequestState] = useState('ready');
@@ -30,7 +30,7 @@ const Authentication = ({ changeState }) => {
       success: (data) => {
         if (data.status === 'ok') {
           const { token } = data.message;
-          changeState({ token, tokenReceiptDate: Date.now() });
+          setCommonState({ token, tokenReceiptDate: Date.now() });
           setRequestState('success');
         } else {
           setErrorMessage(data.message);

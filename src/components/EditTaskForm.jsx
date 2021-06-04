@@ -1,8 +1,12 @@
 import React from 'react';
 
-const EditTaskForm = ({ tasks, editedTaskId, changeState}) => {
+const taskForEdit = '{"id":25678,"username":"luk","email":"my@mail.com","text":"My task","status":0}';
+
+const EditTaskForm = ({ commonState, setCommonState}) => {
+  const { tasks, editedTaskId } = commonState;
+
   function handleClickReturnToTasks() {
-    changeState({ currentComponent: 'tasks' });
+    setCommonState({ currentComponent: 'tasks' });
   }
 
   const {
@@ -12,8 +16,13 @@ const EditTaskForm = ({ tasks, editedTaskId, changeState}) => {
     text,
     status,
   } = tasks.filter(({ id }) => id === editedTaskId)[0];
+
+  const checkbox = status >= 10
+    ? <input className="form-check-input" type="checkbox" id="flexCheckDefault" checked/>
+    : <input className="form-check-input" type="checkbox" id="flexCheckDefault" />;
+
   return (
-    <form className="g-3 needs-validation d-flex flex-column item-alite-center" noValidate>
+    <form className="g-3 needs-validation d-flex flex-column item-alite-center" novalidate>
       <div className="h3 text-center">Edit task</div>
       <div className="mb-2">
         <label htmlFor="validationCustom01" className="form-label">Username</label>
@@ -39,7 +48,7 @@ const EditTaskForm = ({ tasks, editedTaskId, changeState}) => {
         </div>
       </div>
       <div className="form-check">
-        <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+        {checkbox}
         <label className="form-check-label" htmlFor="flexCheckDefault">
           Done
         </label>

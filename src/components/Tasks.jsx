@@ -13,14 +13,15 @@ const getStatusHtml = (status) => {
   }
 };
 
-const Tasks = ({ token, tasks, changeState }) => {
+const Tasks = ({ commonState, setCommonState }) => {
+  const { tasks, token } = commonState;
   function handleClickNewTask() {
-    changeState({ currentComponent: 'newTask' });
+    setCommonState({ currentComponent: 'newTask' });
   }
 
   const handleClickEdit = (taskId) => () => {
     console.log(taskId);
-    changeState({ editedTaskId: taskId, currentComponent: 'editTask' });
+    setCommonState({ editedTaskId: taskId, currentComponent: 'editTask' });
   };
 
   const getEditButton = (taskId) => (token !== null
@@ -41,6 +42,7 @@ const Tasks = ({ token, tasks, changeState }) => {
 
   return (
   <div className="d-flex flex-column">
+    {JSON.stringify(tasks)}
     <div className="h3 text-center">Tasks list</div>
     <nav>
       <div className="dropdown">

@@ -45,13 +45,9 @@ class App extends React.Component {
 
   getConponent() {
     const mapping = {
-      tasks: <Tasks
-         token={this.state.token}
-         tasks={this.state.tasks}
-         changeState={this.setState.bind(this)}
-      />,
-      newTask: <NewTaskForm changeState={this.setState.bind(this)}/>,
-      editTask: <EditTaskForm changeState={this.setState.bind(this)} tasks={this.state.tasks} editedTaskId={this.state.editedTaskId}/>,
+      tasks: <Tasks commonState={this.state} setCommonState={this.setState.bind(this)} />,
+      newTask: <NewTaskForm setCommonState={this.setState.bind(this)}/>,
+      editTask: <EditTaskForm setCommonState={this.setState.bind(this)} commonState={this.state}/>,
     };
     return mapping[this.state.currentComponent];
   }
@@ -63,7 +59,7 @@ class App extends React.Component {
           {this.getConponent()}
         </div>
         <div className='col-4'>
-          <Authentication changeState={this.setState.bind(this)}/>
+          <Authentication setCommonState={this.setState.bind(this)}/>
         </div>
       </div>
     );

@@ -1,6 +1,5 @@
-// @ts-check
-
-import React from 'react';
+import React, { useState } from 'react';
+import $ from 'jquery';
 
 const eddedTask = {
   status: 'ok',
@@ -13,24 +12,69 @@ const eddedTask = {
   },
 };
 
-const NewTaskForm = ({ changeState }) => {
+const NewTaskForm = ({ setCommonState }) => {
+  const [requestState, setRequestState] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+
+  const getErrorText = () => {
+    const usernameError = errorMessage.username ? errorMessage.userName : '';
+    const passwordError = errorMessage.password ? errorMessage.password : '';
+    const textError = errorMessage.password ? errorMessage.password : '';
+    console.log(JSON.stringify(errorMessage));
+    return `Task haven't saved ${usernameError} ${passwordError} ${textError}`;
+  };
+
   function handleClickReturnToTasks() {
-    changeState({ currentComponent: 'tasks' });
+    setCommonState({ currentComponent: 'tasks' });
   }
 
+  const handleSubmit = () => (e) => {
+    e.preventDefault();
+
+    const form = new FormData(e.target);
+
+    setRequestState('requestInProgress');
+
+    $.ajax({
+      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Lukyanenok',
+      crossDomain: true,
+      method: 'POST',
+      mimeType: 'multipart/form-data',
+      contentType: false,
+      processData: false,
+      data: form,
+      dataType: 'json',
+      success: (data) => {
+        if (data.status === 'ok') {
+          setCommonState({ tasks: [data.message], currentComponent: 'tasks' });
+        } else {
+          setErrorMessage(data.message);
+          setRequestState('wrongData');
+        }
+      },
+      error: () => {
+        setRequestState('failed');
+      },
+    });
+  };
+
+  const submitButton = requestState === 'requestInProgress'
+    ? <button className="btn btn-primary m-1" type="submit" disabled>Save</button>
+    : <button className="btn btn-primary m-1" type="submit">Save</button>;
+
   return (
-    <form className="g-3 needs-validation d-flex flex-column item-alite-center" noValidate>
+    <form className="g-3 needs-validation d-flex flex-column item-alite-center" onSubmit={handleSubmit()} novalidate>
       <div className="h3 text-center">New task</div>
       <div className="mb-2">
         <label htmlFor="validationCustom01" className="form-label">Username</label>
-        <input type="text" className="form-control" id="validationCustom01" required />
+        <input type="text" className="form-control" id="validationCustom01" name="username" required />
         <div className="invalid-feedback">
           Fill this field, please!
         </div>
       </div>
       <div className="mb-2">
         <label htmlFor="validationCustom02" className="form-label">Email</label>
-        <input type="email" className="form-control" id="validationCustom02" required />
+        <input type="email" className="form-control" id="validationCustom02" name="email" required />
         <div className="invalid-feedback">
           Fill this field, please!
         </div>
@@ -38,15 +82,21 @@ const NewTaskForm = ({ changeState }) => {
       <div className="mb-2">
         <label htmlFor="validationCustomUsername" className="form-label">Text</label>
         <div className="input-group">
-          <textarea className="form-control" rows="5" cols="20" id="validationText" aria-describedby="inputGroupPrepend" required />
+          <textarea className="form-control" rows="5" cols="20" id="validationText" name="text" aria-describedby="inputGroupPrepend" required />
           <div className="invalid-feedback">
             Fill this field, please!
           </div>
         </div>
       </div>
+      <div className="mt-2 text-center font-weight-bold text-danger">
+        {requestState === 'wrongData' ? <p>{getErrorText()}</p> : null}
+      </div>
+      <div className="mt-2 text-center font-weight-bold text-danger">
+        {requestState === 'failed' ? <p>Network error.</p> : null}
+      </div>
       <div className="d-flex justify-content-end">
         <button className="btn btn-primary m-1" type="button" onClick={handleClickReturnToTasks}>Return to tasks list</button>
-        <button className="btn btn-primary m-1" type="submit">Save</button>
+        {submitButton}
       </div>
     </form>
   );
