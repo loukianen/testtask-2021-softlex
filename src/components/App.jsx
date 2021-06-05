@@ -1,5 +1,3 @@
-// @ts-check
-
 import React from 'react';
 import Tasks from './Tasks.jsx';
 import NewTaskForm from './NewTaskForm.jsx';

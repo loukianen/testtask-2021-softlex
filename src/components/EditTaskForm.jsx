@@ -1,14 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
+import $ from 'jquery';
 
-const taskForEdit = '{"id":25678,"username":"luk","email":"my@mail.com","text":"My task","status":0}';
+const isEven = (num) => num % 2 === 0;
 
 const EditTaskForm = ({ commonState, setCommonState}) => {
-  const { tasks, editedTaskId } = commonState;
-
-  function handleClickReturnToTasks() {
-    setCommonState({ currentComponent: 'tasks' });
-  }
-
+  const { tasks, editedTaskId, token, tokenReceiptDate, tokenValidityPeriod } = commonState;
   const {
     id,
     username,
@@ -17,12 +13,87 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
     status,
   } = tasks.filter(({ id }) => id === editedTaskId)[0];
 
-  const checkbox = status >= 10
-    ? <input className="form-check-input" type="checkbox" id="flexCheckDefault" checked/>
-    : <input className="form-check-input" type="checkbox" id="flexCheckDefault" />;
+  const [requestState, setRequestState] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+  const [currentText, setCurrentText] = useState(text);
+  const [currentDoneStatus, setCurrentDoneStatus] = useState(status >= 10);
+
+  const getErrorText = () => {
+    const usernameError = errorMessage.username ? errorMessage.userName : '';
+    const passwordError = errorMessage.password ? errorMessage.password : '';
+    const textError = errorMessage.password ? errorMessage.password : '';
+    const tokenError = errorMessage.token ? errorMessage.token : '';
+    return `Task haven't saved ${usernameError} ${passwordError} ${textError} ${tokenError}`;
+  };
+
+  const getStatus = () => {
+    const isTaskEdited = !isEven(status) || text !== currentText;
+    return currentDoneStatus * 10 + isTaskEdited;
+  };
+
+  function handleClickReturnToTasks() {
+    setCommonState({ currentComponent: 'tasks' });
+  }
+
+  const handleChangeText = () => (e) => {
+    setCurrentText(e.target.value);
+  };
+
+  const handleChangeStatus = () => (e) => {
+    setCurrentDoneStatus(e.target.checked);
+  };
+
+    const handleSubmit = () => (e) => {
+    e.preventDefault();
+    setRequestState('requestInProgress');
+
+    if (Date.now() - tokenReceiptDate > tokenValidityPeriod) {
+      setErrorMessage({
+        token: 'Authentication period have been finished. Please, refresh your authentication'
+      });
+      setRequestState('wrongData');
+      return;
+    }
+
+    const newStatus = getStatus();
+
+    const form = new FormData();
+      form.append('token', token);
+      form.append('status', newStatus);
+      form.append('text', currentText);
+
+    $.ajax({
+      url: `https://uxcandy.com/~shapoval/test-task-backend/v2/edit/${id}?developer=Lukyanenok`,
+      crossDomain: true,
+      method: 'POST',
+      mimeType: 'multipart/form-data',
+      contentType: false,
+      processData: false,
+      data: form,
+      dataType: 'json',
+      success: (data) => {
+        console.log(JSON.stringify(data));
+        if (data.status === 'ok') {
+          const editedTasks = tasks.map((task) => {
+            if (task.id === id) {
+              return { ...task, text: currentText, status: newStatus };
+            }
+            return task;
+          });
+          setCommonState({ tasks: editedTasks, currentComponent: 'tasks' });
+        } else {
+          setErrorMessage(data.message);
+          setRequestState('wrongData');
+        }
+      },
+      error: () => {
+        setRequestState('failed');
+      },
+    });
+  };
 
   return (
-    <form className="g-3 needs-validation d-flex flex-column item-alite-center" novalidate>
+    <form className="g-3 needs-validation d-flex flex-column item-alite-center" onSubmit={handleSubmit()} novalidate>
       <div className="h3 text-center">Edit task</div>
       <div className="mb-2">
         <label htmlFor="validationCustom01" className="form-label">Username</label>
@@ -41,21 +112,27 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
       <div className="mb-2">
         <label htmlFor="validationCustomUsername" className="form-label">Text</label>
         <div className="input-group">
-          <textarea className="form-control" rows="5" cols="20" value={text} id="validationText" aria-describedby="inputGroupPrepend" required />
+          <textarea className="form-control" rows="5" cols="20" value={currentText} id="validationText" aria-describedby="inputGroupPrepend" onChange={handleChangeText()} required />
           <div className="invalid-feedback">
             Fill this field, please!
           </div>
         </div>
       </div>
       <div className="form-check">
-        {checkbox}
+        <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChangeStatus()} checked={currentDoneStatus}/>
         <label className="form-check-label" htmlFor="flexCheckDefault">
           Done
         </label>
       </div>
+      <div className="mt-2 text-center font-weight-bold text-danger">
+        {requestState === 'wrongData' ? <p>{getErrorText()}</p> : null}
+      </div>
+      <div className="mt-2 text-center font-weight-bold text-danger">
+        {requestState === 'failed' ? <p>Network error.</p> : null}
+      </div>
       <div className="d-flex justify-content-end">
       <button className="btn btn-primary m-1" type="button" onClick={handleClickReturnToTasks}>Return to tasks list</button>
-        <button className="btn btn-primary m-1" type="submit">Save</button>
+        <button className="btn btn-primary m-1" type="submit" disabled={requestState === 'requestInProgress'}>Save</button>
       </div>
     </form>
   );

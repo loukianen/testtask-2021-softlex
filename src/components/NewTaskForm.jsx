@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
 import $ from 'jquery';
 
-const eddedTask = {
-  status: 'ok',
-  message: {
-    id: 8,
-    username: 'Example user',
-    email: '123@example.com',
-    text: 'Some text',
-    status: 0,
-  },
-};
-
 const NewTaskForm = ({ setCommonState }) => {
   const [requestState, setRequestState] = useState();
   const [errorMessage, setErrorMessage] = useState();
@@ -30,10 +19,9 @@ const NewTaskForm = ({ setCommonState }) => {
 
   const handleSubmit = () => (e) => {
     e.preventDefault();
+    setRequestState('requestInProgress');
 
     const form = new FormData(e.target);
-
-    setRequestState('requestInProgress');
 
     $.ajax({
       url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Lukyanenok',
@@ -57,10 +45,6 @@ const NewTaskForm = ({ setCommonState }) => {
       },
     });
   };
-
-  const submitButton = requestState === 'requestInProgress'
-    ? <button className="btn btn-primary m-1" type="submit" disabled>Save</button>
-    : <button className="btn btn-primary m-1" type="submit">Save</button>;
 
   return (
     <form className="g-3 needs-validation d-flex flex-column item-alite-center" onSubmit={handleSubmit()} novalidate>
@@ -96,7 +80,7 @@ const NewTaskForm = ({ setCommonState }) => {
       </div>
       <div className="d-flex justify-content-end">
         <button className="btn btn-primary m-1" type="button" onClick={handleClickReturnToTasks}>Return to tasks list</button>
-        {submitButton}
+        <button className="btn btn-primary m-1" type="submit" disabled={requestState === 'requestInProgress'}>Save</button>
       </div>
     </form>
   );

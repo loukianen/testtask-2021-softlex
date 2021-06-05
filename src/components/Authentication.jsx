@@ -15,9 +15,11 @@ const Authentication = ({ setCommonState }) => {
 
   const handleSubmit = () => (e) => {
     e.preventDefault();
+    setRequestState('requestInProgress');
+
     const formData = new FormData(e.target);
     $('input').val('');
-    setRequestState('requestInProgress');
+
     $.ajax({
       url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/login?developer=Lukyanenok',
       crossDomain: true,
@@ -43,10 +45,6 @@ const Authentication = ({ setCommonState }) => {
     });
   };
 
-  const button = requestState === 'requestInProgress'
-    ? <button type="submit" className="btn btn-primary" disabled>Sign in</button>
-    : <button type="submit" className="btn btn-primary">Sign in</button>;
-
   return (
     <div className="text-centre">
       <div className="h3 mb-3 text-center">Authentication</div>
@@ -64,7 +62,7 @@ const Authentication = ({ setCommonState }) => {
           </div>
         </div>
         <div className="d-flex justify-content-end">
-          {button}
+          <button className="btn btn-primary" type="submit" disabled={requestState === 'requestInProgress'}>Save</button>
         </div>
       </form>
       <div className="mt-2 text-center font-weight-bold text-success">
