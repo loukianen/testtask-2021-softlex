@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import $ from 'jquery';
 
-const getStatusHtml = (status) => {
+const getStatusBadge = (status) => {
   switch (status) {
     case 1:
       return <span className="badge bg-danger">Edited by admin, not done</span>;
@@ -14,17 +15,65 @@ const getStatusHtml = (status) => {
 };
 
 const Tasks = ({ commonState, setCommonState }) => {
-  const { tasks, token } = commonState;
+  const { tasks, taskCount, tokenReceiptDate, tokenValidityPeriod } = commonState;
+
+  const [requestState, setRequestState] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+  const [sortBy, setSortBy] = useState();
+  const [sortDirection, setSortDirection] = useState();
+  const [page, setPage] = useState(1);
+
+  const makeRequst = () => {
+    const requestParams = {
+      developer: 'Example',
+      page,
+      sort_field: sortBy,
+      sort_direction: sortDirection,
+    };
+
+    $.ajax({
+      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/',
+      crossDomain: true,
+      method: 'GET',
+      mimeType: 'multipart/form-data',
+      contentType: false,
+      processData: true,
+      dataType: 'json',
+      data: requestParams,
+      success: (data) => {
+        console.log(JSON.stringify(data));
+        if (data.status === 'ok') {
+          setCommonState({ tasks: data.message.tasks, taskCount: data.total_task_count });
+        } else {
+          setErrorMessage(data.message);
+          setRequestState('wrongData');
+        }
+      },
+      error: () => {
+        setRequestState('failed');
+      },
+    });
+  };
+
+  useEffect(() => makeRequst(), [sortBy, sortDirection, page]);
+
   function handleClickNewTask() {
     setCommonState({ currentComponent: 'newTask' });
   }
 
   const handleClickEdit = (taskId) => () => {
-    console.log(taskId);
     setCommonState({ editedTaskId: taskId, currentComponent: 'editTask' });
   };
 
-  const getEditButton = (taskId) => (token !== null
+  const handleSortChange = (param) => () => {
+    setSortBy(param);
+  };
+
+  const handleSortDirectionChange = (param) => () => {
+    setSortDirection(param);
+  };
+
+  const getEditButton = (taskId) => (Date.now() - tokenReceiptDate < tokenValidityPeriod
     ? <div className="m-3 d-flex justify-content-end">
         <button
           type="button"
@@ -36,13 +85,12 @@ const Tasks = ({ commonState, setCommonState }) => {
       </div>
     : null);
 
-  if (tasks.length === 0) {
+  if (tasks === null) {
     return null;
   }
 
   return (
   <div className="d-flex flex-column">
-    {JSON.stringify(tasks)}
     <div className="h3 text-center">Tasks list</div>
     <nav>
       <div className="dropdown">
@@ -50,17 +98,17 @@ const Tasks = ({ commonState, setCommonState }) => {
           Sort by
         </button>
         <ul className="dropdown-menu" aria-labelledby="sortByMenu">
-          <li className="dropdown-item">Id</li>
-          <li className="dropdown-item">Username</li>
-          <li className="dropdown-item">Email</li>
-          <li className="dropdown-item">Status</li>
+          <li className="dropdown-item" onClick={handleSortChange('id')}>Id</li>
+          <li className="dropdown-item" onClick={handleSortChange('username')}>Username</li>
+          <li className="dropdown-item" onClick={handleSortChange('email')}>Email</li>
+          <li className="dropdown-item" onClick={handleSortChange('status')}>Status</li>
         </ul>
         <button className="btn btn-outline-secondary dropdown-toggle  mx-1" type="button" id="sortDirectionMenu" data-bs-toggle="dropdown" aria-expanded="false">
           Sort direction
         </button>
         <ul className="dropdown-menu" aria-labelledby="sortDirectionMenu">
-          <li className="dropdown-item">Asc</li>
-          <li className="dropdown-item">Desc</li>
+          <li className="dropdown-item" onClick={handleSortDirectionChange('asc')}>Asc</li>
+          <li className="dropdown-item" onClick={handleSortDirectionChange('desc')}>Desc</li>
         </ul>
       </div>
     </nav>
@@ -71,7 +119,7 @@ const Tasks = ({ commonState, setCommonState }) => {
               <div className="card-body">
                 <h5 className="card-title">{username}</h5>
                 <h6 className="card-subtitle mb-2 text-muted">{email}</h6>
-                <div className="d-flex justify-content-end">{getStatusHtml(status)}</div>
+                <div className="d-flex justify-content-end">{getStatusBadge(status)}</div>
                 <p className="card-text">{text}</p>
                   {getEditButton(id)}
               </div>

@@ -33,11 +33,12 @@ class App extends React.Component {
     super();
     this.state = {
       token: 'MWxDRnNDNFhFRndsWDQyeGxHamIwdXpUS2Z4MVg2UDFjQ2cxQldQVjAxZDh5MXVMdTJsWVBNeU85c2J3YUgyYkw0SFRFQURnVmV3VkxFeG9yVW9kSnc9PQ==',
-      tokenReceiptDate: Date.now(),
+      tokenReceiptDate: Date.now() - 1000,
       tokenValidityPeriod: 1000 * 60 * 60 * 24, // period 24 hours (in milliseconds)
       currentComponent: 'tasks',
       editedTaskId: null,
-      tasks,
+      tasks: null,
+      taskCount: null,
     };
   }
 

@@ -11,7 +11,7 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
     email,
     text,
     status,
-  } = tasks.filter(({ id }) => id === editedTaskId)[0];
+  } = tasks.filter(({ id: taskId }) => taskId === editedTaskId)[0];
 
   const [requestState, setRequestState] = useState();
   const [errorMessage, setErrorMessage] = useState();
@@ -19,11 +19,10 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
   const [currentDoneStatus, setCurrentDoneStatus] = useState(status >= 10);
 
   const getErrorText = () => {
-    const usernameError = errorMessage.username ? errorMessage.userName : '';
-    const passwordError = errorMessage.password ? errorMessage.password : '';
     const textError = errorMessage.password ? errorMessage.password : '';
     const tokenError = errorMessage.token ? errorMessage.token : '';
-    return `Task haven't saved ${usernameError} ${passwordError} ${textError} ${tokenError}`;
+    const idError = errorMessage.id ? errorMessage.id : '';
+    return `Task haven't saved. ${textError} ${tokenError} ${idError}`;
   };
 
   const getStatus = () => {
@@ -43,7 +42,7 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
     setCurrentDoneStatus(e.target.checked);
   };
 
-    const handleSubmit = () => (e) => {
+  const handleSubmit = () => (e) => {
     e.preventDefault();
     setRequestState('requestInProgress');
 
@@ -58,9 +57,9 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
     const newStatus = getStatus();
 
     const form = new FormData();
-      form.append('token', token);
-      form.append('status', newStatus);
-      form.append('text', currentText);
+    form.append('token', token);
+    form.append('status', newStatus);
+    form.append('text', currentText);
 
     $.ajax({
       url: `https://uxcandy.com/~shapoval/test-task-backend/v2/edit/${id}?developer=Lukyanenok`,
@@ -72,7 +71,6 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
       data: form,
       dataType: 'json',
       success: (data) => {
-        console.log(JSON.stringify(data));
         if (data.status === 'ok') {
           const editedTasks = tasks.map((task) => {
             if (task.id === id) {
@@ -131,7 +129,7 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
         {requestState === 'failed' ? <p>Network error.</p> : null}
       </div>
       <div className="d-flex justify-content-end">
-      <button className="btn btn-primary m-1" type="button" onClick={handleClickReturnToTasks}>Return to tasks list</button>
+        <button className="btn btn-primary m-1" type="button" onClick={handleClickReturnToTasks}>Return to tasks list</button>
         <button className="btn btn-primary m-1" type="submit" disabled={requestState === 'requestInProgress'}>Save</button>
       </div>
     </form>
