@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import $ from 'jquery';
 
-const NewTaskForm = ({ setCommonState }) => {
+const NewTaskForm = ({ setCommonState, commonState }) => {
   const [requestState, setRequestState] = useState();
   const [errorMessage, setErrorMessage] = useState();
 
@@ -9,7 +9,6 @@ const NewTaskForm = ({ setCommonState }) => {
     const usernameError = errorMessage.username ? errorMessage.userName : '';
     const passwordError = errorMessage.password ? errorMessage.password : '';
     const textError = errorMessage.password ? errorMessage.password : '';
-    console.log(JSON.stringify(errorMessage));
     return `Task haven't saved ${usernameError} ${passwordError} ${textError}`;
   };
 
@@ -24,7 +23,7 @@ const NewTaskForm = ({ setCommonState }) => {
     const form = new FormData(e.target);
 
     $.ajax({
-      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Lukyanenok',
+      url: `${commonState.url}/create?developer=Lukyanenok`,
       crossDomain: true,
       method: 'POST',
       mimeType: 'multipart/form-data',

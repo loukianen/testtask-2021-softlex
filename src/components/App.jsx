@@ -4,37 +4,15 @@ import NewTaskForm from './NewTaskForm.jsx';
 import EditTaskForm from './EditTaskForm.jsx';
 import Authentication from './Authentication.jsx';
 
-const tasks = [
-  {
-    "id": 1,
-    "username": "Test User",
-    "email": "test_user_1@example.com",
-    "text": "Hello, world!",
-    "status": 10,
-  },
-  {
-      "id": 3,
-      "username": "Test User 2",
-      "email": "test_user_2@example.com",
-      "text": "Hello from user 2!",
-      "status": 11,
-  },
-  {
-      "id": 4,
-      "username": "Test User 3",
-      "email": "test_user_3@example.com",
-      "text": "Hello from user 3!",
-      "status": 1,
-  },
-];
-
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      token: 'MWxDRnNDNFhFRndsWDQyeGxHamIwdXpUS2Z4MVg2UDFjQ2cxQldQVjAxZDh5MXVMdTJsWVBNeU85c2J3YUgyYkw0SFRFQURnVmV3VkxFeG9yVW9kSnc9PQ==',
-      tokenReceiptDate: Date.now() - 1000,
+      token: null,
+      tokenReceiptDate: null,
       tokenValidityPeriod: 1000 * 60 * 60 * 24, // period 24 hours (in milliseconds)
+      tasksOnPage: 3,
+      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2',
       currentComponent: 'tasks',
       editedTaskId: null,
       tasks: null,
@@ -45,7 +23,7 @@ class App extends React.Component {
   getConponent() {
     const mapping = {
       tasks: <Tasks commonState={this.state} setCommonState={this.setState.bind(this)} />,
-      newTask: <NewTaskForm setCommonState={this.setState.bind(this)}/>,
+      newTask: <NewTaskForm setCommonState={this.setState.bind(this)} commonState={this.state}/>,
       editTask: <EditTaskForm setCommonState={this.setState.bind(this)} commonState={this.state}/>,
     };
     return mapping[this.state.currentComponent];
@@ -58,7 +36,7 @@ class App extends React.Component {
           {this.getConponent()}
         </div>
         <div className='col-4'>
-          <Authentication setCommonState={this.setState.bind(this)}/>
+          <Authentication setCommonState={this.setState.bind(this)} commonState={this.state}/>
         </div>
       </div>
     );

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import $ from 'jquery';
 
-const Authentication = ({ setCommonState }) => {
-  // MWxDRnNDNFhFRndsWDQyeGxHamIwdXpUS2Z4MVg2UDFjQ2cxQldQVjAxZDh5MXVMdTJsWVBNeU85c2J3YUgyYkw0SFRFQURnVmV3VkxFeG9yVW9kSnc9PQ==
-
+const Authentication = ({ setCommonState, commonState }) => {
   const [requestState, setRequestState] = useState('ready');
   const [errorMessage, setErrorMessage] = useState();
 
@@ -21,7 +19,7 @@ const Authentication = ({ setCommonState }) => {
     $('input').val('');
 
     $.ajax({
-      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/login?developer=Lukyanenok',
+      url: `${commonState.url}/login?developer=Lukyanenok`,
       crossDomain: true,
       method: 'POST',
       mimeType: 'multipart/form-data',
@@ -62,7 +60,7 @@ const Authentication = ({ setCommonState }) => {
           </div>
         </div>
         <div className="d-flex justify-content-end">
-          <button className="btn btn-primary" type="submit" disabled={requestState === 'requestInProgress'}>Save</button>
+          <button className="btn btn-primary" type="submit" disabled={requestState === 'requestInProgress'}>Sign in</button>
         </div>
       </form>
       <div className="mt-2 text-center font-weight-bold text-success">

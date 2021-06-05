@@ -4,7 +4,7 @@ import $ from 'jquery';
 const isEven = (num) => num % 2 === 0;
 
 const EditTaskForm = ({ commonState, setCommonState}) => {
-  const { tasks, editedTaskId, token, tokenReceiptDate, tokenValidityPeriod } = commonState;
+  const { tasks, editedTaskId, token, tokenReceiptDate, tokenValidityPeriod, url } = commonState;
   const {
     id,
     username,
@@ -62,7 +62,7 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
     form.append('text', currentText);
 
     $.ajax({
-      url: `https://uxcandy.com/~shapoval/test-task-backend/v2/edit/${id}?developer=Lukyanenok`,
+      url: `${url}/edit/${id}?developer=Lukyanenok`,
       crossDomain: true,
       method: 'POST',
       mimeType: 'multipart/form-data',
