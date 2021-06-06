@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import $ from 'jquery';
 
 const isEven = (num) => num % 2 === 0;
 
-const EditTaskForm = ({ commonState, setCommonState}) => {
-  const { tasks, editedTaskId, token, tokenReceiptDate, tokenValidityPeriod, url } = commonState;
+const EditTaskForm = ({
+  tasks,
+  editedTaskId,
+  token,
+  tokenReceiptDate,
+  tokenValidityPeriod,
+  url,
+  setCommonState,
+}) => {
   const {
     id,
     username,
@@ -48,7 +56,7 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
 
     if (Date.now() - tokenReceiptDate > tokenValidityPeriod) {
       setErrorMessage({
-        token: 'Authentication period have been finished. Please, refresh your authentication'
+        token: 'Authentication period have been finished. Please, refresh your authentication',
       });
       setRequestState('wrongData');
       return;
@@ -91,6 +99,7 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
   };
 
   return (
+    /* eslint-disable react/no-unknown-property */
     <form className="g-3 needs-validation d-flex flex-column item-alite-center" onSubmit={handleSubmit()} novalidate>
       <div className="h3 text-center">Edit task</div>
       <div className="mb-2">
@@ -117,7 +126,7 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
         </div>
       </div>
       <div className="form-check">
-        <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChangeStatus()} checked={currentDoneStatus}/>
+        <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChangeStatus()} checked={currentDoneStatus} />
         <label className="form-check-label" htmlFor="flexCheckDefault">
           Done
         </label>
@@ -134,6 +143,16 @@ const EditTaskForm = ({ commonState, setCommonState}) => {
       </div>
     </form>
   );
+};
+
+EditTaskForm.propTypes = {
+  setCommonState: PropTypes.func.isRequired,
+  url: PropTypes.string.isRequired,
+  tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  editedTaskId: PropTypes.number.isRequired,
+  token: PropTypes.string.isRequired,
+  tokenReceiptDate: PropTypes.number.isRequired,
+  tokenValidityPeriod: PropTypes.number.isRequired,
 };
 
 export default EditTaskForm;

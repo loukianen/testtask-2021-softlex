@@ -5,4 +5,4 @@ start:
 	npm start
 
 lint:
-	npx eslint .
+	npx eslint . --ext jsx --ext js

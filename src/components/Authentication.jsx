@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import $ from 'jquery';
 
-const Authentication = ({ setCommonState, commonState }) => {
+const Authentication = ({ setCommonState, url }) => {
   const [requestState, setRequestState] = useState('ready');
   const [errorMessage, setErrorMessage] = useState();
 
@@ -19,7 +20,7 @@ const Authentication = ({ setCommonState, commonState }) => {
     $('input').val('');
 
     $.ajax({
-      url: `${commonState.url}/login?developer=Lukyanenok`,
+      url: `${url}/login?developer=Lukyanenok`,
       crossDomain: true,
       method: 'POST',
       mimeType: 'multipart/form-data',
@@ -48,15 +49,15 @@ const Authentication = ({ setCommonState, commonState }) => {
       <div className="h3 mb-3 text-center">Authentication</div>
       <form onSubmit={handleSubmit()}>
         <div className="mb-3">
-          <label htmlFor="inputLogin" className="col-sm-2 col-form-label">Login</label>
+          <label htmlFor="Login" className="col-sm-2 col-form-label">Login</label>
           <div className="col-sm-12">
-            <input type="text" className="form-control" name="username" required/>
+            <input type="text" id="Login" className="form-control" name="username" required />
           </div>
         </div>
         <div className="mb-3">
-          <label htmlFor="inputPassword" className="col-sm-2 col-form-label">Password</label>
+          <label htmlFor="Password" aria-label="password" className="col-sm-2 col-form-label">Password</label>
           <div className="col-sm-12">
-            <input type="password" className="form-control" name="password" required/>
+            <input type="password" id="Password" className="form-control" name="password" required />
           </div>
         </div>
         <div className="d-flex justify-content-end">
@@ -72,8 +73,14 @@ const Authentication = ({ setCommonState, commonState }) => {
       <div className="mt-2 text-center font-weight-bold text-danger">
         {requestState === 'failed' ? <p>Network error.</p> : null}
       </div>
+      {JSON.stringify(PropTypes.func.isRequired)}
     </div>
   );
+};
+
+Authentication.propTypes = {
+  setCommonState: PropTypes.func.isRequired,
+  url: PropTypes.string.isRequired,
 };
 
 export default Authentication;

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import $ from 'jquery';
 
-const NewTaskForm = ({ setCommonState, commonState }) => {
+const NewTaskForm = ({ setCommonState, url }) => {
   const [requestState, setRequestState] = useState();
   const [errorMessage, setErrorMessage] = useState();
 
@@ -23,7 +24,7 @@ const NewTaskForm = ({ setCommonState, commonState }) => {
     const form = new FormData(e.target);
 
     $.ajax({
-      url: `${commonState.url}/create?developer=Lukyanenok`,
+      url: `${url}/create?developer=Lukyanenok`,
       crossDomain: true,
       method: 'POST',
       mimeType: 'multipart/form-data',
@@ -46,6 +47,7 @@ const NewTaskForm = ({ setCommonState, commonState }) => {
   };
 
   return (
+    /* eslint-disable react/no-unknown-property */
     <form className="g-3 needs-validation d-flex flex-column item-alite-center" onSubmit={handleSubmit()} novalidate>
       <div className="h3 text-center">New task</div>
       <div className="mb-2">
@@ -83,6 +85,11 @@ const NewTaskForm = ({ setCommonState, commonState }) => {
       </div>
     </form>
   );
+};
+
+NewTaskForm.propTypes = {
+  setCommonState: PropTypes.func.isRequired,
+  url: PropTypes.string.isRequired,
 };
 
 export default NewTaskForm;
