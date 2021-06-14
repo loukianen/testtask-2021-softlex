@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import $ from 'jquery';
+import Input from './Input.jsx';
+import ButtonsBlock from './ButtonsBlock.jsx';
+import FeedbackRenderer from './FeedbackRenderer.jsx';
+import { getErrorText } from '../utils';
 
 const NewTaskForm = ({ setCommonState, url }) => {
   const [requestState, setRequestState] = useState();
-  const [errorMessage, setErrorMessage] = useState();
-
-  const getErrorText = () => {
-    const usernameError = errorMessage.username ? errorMessage.userName : '';
-    const passwordError = errorMessage.password ? errorMessage.password : '';
-    const textError = errorMessage.password ? errorMessage.password : '';
-    return `Task haven't saved ${usernameError} ${passwordError} ${textError}`;
-  };
+  const [errorMessage, setErrorMessage] = useState({});
 
   function handleClickReturnToTasks() {
     setCommonState({ currentComponent: 'tasks' });
@@ -50,20 +47,8 @@ const NewTaskForm = ({ setCommonState, url }) => {
     /* eslint-disable react/no-unknown-property */
     <form className="g-3 needs-validation d-flex flex-column item-alite-center" onSubmit={handleSubmit()} novalidate>
       <div className="h3 text-center">New task</div>
-      <div className="mb-2">
-        <label htmlFor="validationCustom01" className="form-label">Username</label>
-        <input type="text" className="form-control" id="validationCustom01" name="username" required />
-        <div className="invalid-feedback">
-          Fill this field, please!
-        </div>
-      </div>
-      <div className="mb-2">
-        <label htmlFor="validationCustom02" className="form-label">Email</label>
-        <input type="email" className="form-control" id="validationCustom02" name="email" required />
-        <div className="invalid-feedback">
-          Fill this field, please!
-        </div>
-      </div>
+      <Input inputName="Username" inputType="text" isDisabled={false} />
+      <Input inputName="Email" inputType="email" isDisabled={false} />
       <div className="mb-2">
         <label htmlFor="validationCustomUsername" className="form-label">Text</label>
         <div className="input-group">
@@ -73,16 +58,8 @@ const NewTaskForm = ({ setCommonState, url }) => {
           </div>
         </div>
       </div>
-      <div className="mt-2 text-center font-weight-bold text-danger">
-        {requestState === 'wrongData' ? <p>{getErrorText()}</p> : null}
-      </div>
-      <div className="mt-2 text-center font-weight-bold text-danger">
-        {requestState === 'failed' ? <p>Network error.</p> : null}
-      </div>
-      <div className="d-flex justify-content-end">
-        <button className="btn btn-primary m-1" type="button" onClick={handleClickReturnToTasks}>Return to tasks list</button>
-        <button className="btn btn-primary m-1" type="submit" disabled={requestState === 'requestInProgress'}>Save</button>
-      </div>
+      <FeedbackRenderer requestState={requestState} errorText={getErrorText(errorMessage, "Task haven't saved")} />
+      <ButtonsBlock handler={handleClickReturnToTasks} isDisabled={requestState === 'requestInProgress'} />
     </form>
   );
 };
