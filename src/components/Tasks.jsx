@@ -121,6 +121,11 @@ const Tasks = ({
     </div>
   );
 
+  const renderDropItems = (list, handler) => list.map((item) => {
+    const id = item.toLowerCase();
+    return <li key={id}><button type="button" className="dropdown-item" onClick={handler(id)}>{item}</button></li>;
+  });
+
   const paginationData = getPaginationData();
 
   return (
@@ -132,17 +137,13 @@ const Tasks = ({
             Sort by
           </button>
           <ul className="dropdown-menu" aria-labelledby="sortByMenu">
-            <li><button type="button" className="dropdown-item" onClick={handleSortChange('id')}>Id</button></li>
-            <li><button type="button" className="dropdown-item" onClick={handleSortChange('username')}>Username</button></li>
-            <li><button type="button" className="dropdown-item" onClick={handleSortChange('email')}>Email</button></li>
-            <li><button type="button" className="dropdown-item" onClick={handleSortChange('status')}>Status</button></li>
+            {renderDropItems(['Id', 'Username', 'Email', 'Status'], handleSortChange)}
           </ul>
           <button className="btn btn-outline-secondary dropdown-toggle  mx-1" type="button" id="sortDirectionMenu" data-bs-toggle="dropdown" aria-expanded="false">
             Sort direction
           </button>
           <ul className="dropdown-menu" aria-labelledby="sortDirectionMenu">
-            <li><button type="button" className="dropdown-item" onClick={handleSortDirectionChange('asc')}>Asc</button></li>
-            <li><button type="button" className="dropdown-item" onClick={handleSortDirectionChange('desc')}>Desc</button></li>
+            {renderDropItems(['Asc', 'Desc'], handleSortDirectionChange)}
           </ul>
         </div>
       </nav>
