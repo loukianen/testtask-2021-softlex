@@ -29,6 +29,7 @@ const EditTaskForm = ({
   const [errorMessage, setErrorMessage] = useState({});
   const [currentText, setCurrentText] = useState(text);
   const [currentDoneStatus, setCurrentDoneStatus] = useState(status >= 10);
+  const isTokenValid = Date.now() - tokenReceiptDate < tokenValidityPeriod;
 
   const getStatus = () => {
     const isTaskEdited = !isEven(status) || text !== currentText;
@@ -47,11 +48,23 @@ const EditTaskForm = ({
     setCurrentDoneStatus(e.target.checked);
   };
 
+  const handleSuccessfulResponse = (data, newStatus) => {
+    if (data.status === 'ok') {
+      const editedTasks = tasks.map((task) => (task.id === id
+        ? { ...task, text: currentText, status: newStatus }
+        : task));
+      setCommonState({ tasks: editedTasks, currentComponent: 'tasks' });
+    } else {
+      setErrorMessage(data.message);
+      setRequestState('wrongData');
+    }
+  };
+
   const handleSubmit = () => (e) => {
     e.preventDefault();
     setRequestState('requestInProgress');
 
-    if (Date.now() - tokenReceiptDate > tokenValidityPeriod) {
+    if (!isTokenValid) {
       setErrorMessage({
         token: 'Authentication period have been finished. Please, refresh your authentication',
       });
@@ -75,23 +88,8 @@ const EditTaskForm = ({
       processData: false,
       data: form,
       dataType: 'json',
-      success: (data) => {
-        if (data.status === 'ok') {
-          const editedTasks = tasks.map((task) => {
-            if (task.id === id) {
-              return { ...task, text: currentText, status: newStatus };
-            }
-            return task;
-          });
-          setCommonState({ tasks: editedTasks, currentComponent: 'tasks' });
-        } else {
-          setErrorMessage(data.message);
-          setRequestState('wrongData');
-        }
-      },
-      error: () => {
-        setRequestState('failed');
-      },
+      success: (data) => handleSuccessfulResponse(data, newStatus),
+      error: () => setRequestState('failed'),
     });
   };
 
