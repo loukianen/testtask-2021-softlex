@@ -3,9 +3,15 @@ import PropTypes from 'prop-types';
 import $ from 'jquery';
 import Input from './Input.jsx';
 import FeedbackRenderer from './FeedbackRenderer.jsx';
-import { getErrorText } from '../utils';
+import { getErrorText, clearTokenData } from '../utils';
 
-const Authentication = ({ setCommonState, url }) => {
+const setToken = (userName, token) => {
+  localStorage.setItem('softlexToDoToken', token);
+  localStorage.setItem('softlexToDoTokenDate', Date.now());
+  localStorage.setItem('softlexToDoTokenUsername', userName);
+};
+
+const Authentication = ({ setCommonState, url, auth }) => {
   const [requestState, setRequestState] = useState('ready');
   const [errorMessage, setErrorMessage] = useState({});
 
@@ -28,11 +34,14 @@ const Authentication = ({ setCommonState, url }) => {
       success: (data) => {
         if (data.status === 'ok') {
           const { token } = data.message;
-          setCommonState({ token, tokenReceiptDate: Date.now() });
+          setToken(formData.get('username'), token);
+          // setCommonState({ token, tokenReceiptDate: Date.now() });
+          setCommonState({ authentication: 'authenticated' });
           setRequestState('success');
         } else {
           setErrorMessage(data.message);
           setRequestState('wrongData');
+          setCommonState({ authentication: 'notAuthenticated' });
         }
       },
       error: () => {
@@ -41,16 +50,37 @@ const Authentication = ({ setCommonState, url }) => {
     });
   };
 
+  const handleSignOut = () => {
+    clearTokenData();
+    setCommonState({ authentication: 'notAuthenticated' });
+  };
+
+  const renderForm = () => (
+    <form onSubmit={handleSubmit()}>
+      <Input inputName="Username" inputType="text" isDisabled={false} />
+      <Input inputName="Password" inputType="password" isDisabled={false} />
+      <div className="d-flex justify-content-end">
+        <button className="btn btn-primary" type="submit" disabled={requestState === 'requestInProgress'}>Sign in</button>
+      </div>
+    </form>
+  );
+
+  const renderSignOutButton = () => (
+    <div className="text-center">
+      <p>
+        You have authenticated as
+        {` '${localStorage.getItem('softlexToDoTokenUsername')}'`}
+      </p>
+      <div className="d-flex justify-content-end">
+        <button className="btn btn-primary" type="button" onClick={handleSignOut}>Sign out</button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="text-centre">
       <div className="h3 mb-3 text-center">Authentication</div>
-      <form onSubmit={handleSubmit()}>
-        <Input inputName="Username" inputType="text" isDisabled={false} />
-        <Input inputName="Password" inputType="password" isDisabled={false} />
-        <div className="d-flex justify-content-end">
-          <button className="btn btn-primary" type="submit" disabled={requestState === 'requestInProgress'}>Sign in</button>
-        </div>
-      </form>
+      {auth === 'authenticated' ? renderSignOutButton() : renderForm()}
       <FeedbackRenderer requestState={requestState} errorText={getErrorText(errorMessage, 'Authentication failed')} />
     </div>
   );
@@ -59,6 +89,7 @@ const Authentication = ({ setCommonState, url }) => {
 Authentication.propTypes = {
   setCommonState: PropTypes.func.isRequired,
   url: PropTypes.string.isRequired,
+  auth: PropTypes.string.isRequired,
 };
 
 export default Authentication;

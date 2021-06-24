@@ -18,15 +18,12 @@ const getStatusBadge = (status) => {
 const Tasks = ({
   tasks,
   taskCount,
-  tokenReceiptDate,
-  tokenValidityPeriod,
   tasksOnPage,
   url,
   page,
   setCommonState,
+  auth,
 }) => {
-  const isTokenValid = Date.now() - tokenReceiptDate < tokenValidityPeriod;
-
   const [requestState, setRequestState] = useState();
   const [sortBy, setSortBy] = useState();
   const [sortDirection, setSortDirection] = useState();
@@ -162,7 +159,7 @@ const Tasks = ({
                 <h6 className="card-subtitle mb-2 text-muted">{email}</h6>
                 <div className="d-flex justify-content-end">{getStatusBadge(status)}</div>
                 <p className="card-text">{text}</p>
-                {isTokenValid
+                {auth === 'authenticated'
                   ? (
                     <div className="m-3 d-flex justify-content-end">
                       <button type="button" className="btn btn-outline-primary btn-sm" onClick={handleClickEdit(id ?? id)}>
@@ -198,11 +195,10 @@ Tasks.propTypes = {
   setCommonState: PropTypes.func.isRequired,
   url: PropTypes.string.isRequired,
   tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
-  tokenReceiptDate: PropTypes.number.isRequired,
-  tokenValidityPeriod: PropTypes.number.isRequired,
   taskCount: PropTypes.number.isRequired,
   tasksOnPage: PropTypes.number.isRequired,
   page: PropTypes.number.isRequired,
+  auth: PropTypes.string.isRequired,
 };
 
 export default Tasks;

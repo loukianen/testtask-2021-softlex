@@ -9,3 +9,16 @@ export const getErrorText = (errorMessage, mainText) => {
   }, [mainText]);
   return resultTextParts.join(' ');
 };
+
+export const isAuthenticationValid = (validityPeriod) => {
+  if (!localStorage.getItem('softlexToDoToken') || !localStorage.getItem('softlexToDoTokenDate')) {
+    return false;
+  }
+  return (Date.now() - Number(localStorage.getItem('softlexToDoTokenDate'))) < validityPeriod;
+};
+
+export const clearTokenData = () => {
+  localStorage.removeItem('softlexToDoToken');
+  localStorage.removeItem('softlexToDoTokenDate');
+  localStorage.removeItem('softlexToDoTokenUsername');
+};

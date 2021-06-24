@@ -4,15 +4,13 @@ import $ from 'jquery';
 import Input from './Input.jsx';
 import ButtonsBlock from './ButtonsBlock.jsx';
 import FeedbackRenderer from './FeedbackRenderer.jsx';
-import { getErrorText } from '../utils';
+import { getErrorText, isAuthenticationValid, clearTokenData } from '../utils';
 
 const isEven = (num) => num % 2 === 0;
 
 const EditTaskForm = ({
   tasks,
   editedTaskId,
-  token,
-  tokenReceiptDate,
   tokenValidityPeriod,
   url,
   setCommonState,
@@ -29,7 +27,6 @@ const EditTaskForm = ({
   const [errorMessage, setErrorMessage] = useState({});
   const [currentText, setCurrentText] = useState(text);
   const [currentDoneStatus, setCurrentDoneStatus] = useState(status >= 10);
-  const isTokenValid = Date.now() - tokenReceiptDate < tokenValidityPeriod;
 
   const getStatus = () => {
     const isTaskEdited = !isEven(status) || text !== currentText;
@@ -57,6 +54,8 @@ const EditTaskForm = ({
     } else {
       setErrorMessage(data.message);
       setRequestState('wrongData');
+      clearTokenData();
+      setCommonState({ authentication: 'notAuthenticated' });
     }
   };
 
@@ -64,18 +63,20 @@ const EditTaskForm = ({
     e.preventDefault();
     setRequestState('requestInProgress');
 
-    if (!isTokenValid) {
+    if (!isAuthenticationValid(tokenValidityPeriod)) {
       setErrorMessage({
         token: 'Authentication period have been finished. Please, refresh your authentication',
       });
       setRequestState('wrongData');
+      clearTokenData();
+      setCommonState({ authentication: 'notAuthenticated' });
       return;
     }
 
     const newStatus = getStatus();
 
     const form = new FormData();
-    form.append('token', token);
+    form.append('token', localStorage.getItem('softlexToDoToken'));
     form.append('status', newStatus);
     form.append('text', currentText);
 
@@ -122,8 +123,6 @@ EditTaskForm.propTypes = {
   url: PropTypes.string.isRequired,
   tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
   editedTaskId: PropTypes.number.isRequired,
-  token: PropTypes.string.isRequired,
-  tokenReceiptDate: PropTypes.number.isRequired,
   tokenValidityPeriod: PropTypes.number.isRequired,
 };
 
