@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 import SingleButton from './SingleButton.jsx';
-import SinglButton from './SingleButton.jsx';
 
 const getStatusBadge = (status) => {
   switch (status) {
@@ -93,6 +92,7 @@ const Tasks = ({
         newPage = param;
     }
     setCommonState({ page: newPage });
+    localStorage.setItem('softlexToDoPage', newPage);
   };
 
   const getPaginationData = () => {
@@ -175,7 +175,7 @@ const Tasks = ({
           </div>
         ))}
       </div>
-      <SinglButton handler={handleClickNewTask} text="Add new task" />
+      <SingleButton handler={handleClickNewTask} text="Add new task" />
       {renderErrors()}
       <nav className="mt-3 d-flex justify-content-center" aria-label="Page navigation">
         <ul className="pagination">

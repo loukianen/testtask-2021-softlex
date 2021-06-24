@@ -11,7 +11,7 @@ class App extends React.Component {
     this.state = {
       tokenValidityPeriod: 1000 * 60 * 60 * 24, // period 24 hours (in milliseconds)
       tasksOnPage: 3,
-      page: 1,
+      page: Number(localStorage.getItem('softlexToDoPage')) ?? 1,
       url: 'https://uxcandy.com/~shapoval/test-task-backend/v2',
       currentComponent: 'tasks',
       editedTaskId: null,
