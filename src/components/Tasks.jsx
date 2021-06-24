@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import $ from 'jquery';
+import SingleButton from './SingleButton.jsx';
+import SinglButton from './SingleButton.jsx';
 
 const getStatusBadge = (status) => {
   switch (status) {
@@ -173,9 +175,7 @@ const Tasks = ({
           </div>
         ))}
       </div>
-      <div className="m-3 d-flex justify-content-end">
-        <button type="button" className="btn btn-primary" onClick={handleClickNewTask}>Add new task</button>
-      </div>
+      <SinglButton handler={handleClickNewTask} text="Add new task" />
       {renderErrors()}
       <nav className="mt-3 d-flex justify-content-center" aria-label="Page navigation">
         <ul className="pagination">

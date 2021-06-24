@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import $ from 'jquery';
 import Input from './Input.jsx';
 import FeedbackRenderer from './FeedbackRenderer.jsx';
+import SingleButton from './SingleButton.jsx';
 import { getErrorText, clearTokenData } from '../utils';
 
 const setToken = (userName, token) => {
@@ -35,7 +36,6 @@ const Authentication = ({ setCommonState, url, auth }) => {
         if (data.status === 'ok') {
           const { token } = data.message;
           setToken(formData.get('username'), token);
-          // setCommonState({ token, tokenReceiptDate: Date.now() });
           setCommonState({ authentication: 'authenticated' });
           setRequestState('success');
         } else {
@@ -65,17 +65,16 @@ const Authentication = ({ setCommonState, url, auth }) => {
     </form>
   );
 
-  const renderSignOutButton = () => (
-    <div className="text-center">
-      <p>
-        You have authenticated as
-        {` '${localStorage.getItem('softlexToDoTokenUsername')}'`}
-      </p>
-      <div className="d-flex justify-content-end">
-        <button className="btn btn-primary" type="button" onClick={handleSignOut}>Sign out</button>
+  const renderSignOutButton = () => {
+    const username = localStorage.getItem('softlexToDoTokenUsername');
+    const authMessage = `You have authenticated as '${username}'`;
+    return (
+      <div className="text-center">
+        <p>{authMessage}</p>
+        <SingleButton handler={handleSignOut} text="Sign out" />
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="text-centre">
